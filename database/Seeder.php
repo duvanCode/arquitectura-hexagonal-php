@@ -102,8 +102,33 @@ try {
     ");
     ok("Tabla 'users' lista");
 
-    // 5. Verificar si el admin ya existe
-    titulo('Paso 4: Crear usuario administrador');
+    // 5. Crear la tabla movies
+    titulo('Paso 4: Crear tabla movies');
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS movies (
+            id                 VARCHAR(36)  NOT NULL,
+            nombre             VARCHAR(200) NOT NULL,
+            titulo_original    VARCHAR(200) NOT NULL,
+            director           VARCHAR(150) NOT NULL,
+            genero             VARCHAR(50)  NOT NULL,
+            duracion_minutos   INT          NOT NULL,
+            fecha_estreno      DATE         NOT NULL,
+            pais_origen        VARCHAR(100) NOT NULL,
+            idioma_original    VARCHAR(100) NOT NULL,
+            clasificacion_edad VARCHAR(30)  NOT NULL,
+            productora         VARCHAR(200) NOT NULL,
+            sinopsis           TEXT         NOT NULL,
+            created_at         DATETIME     NOT NULL,
+            updated_at         DATETIME     NOT NULL,
+            PRIMARY KEY (id)
+        ) ENGINE=InnoDB
+          DEFAULT CHARSET=utf8mb4
+          COLLATE=utf8mb4_unicode_ci
+    ");
+    ok("Tabla 'movies' lista");
+
+    // 6. Verificar si el admin ya existe
+    titulo('Paso 5: Crear usuario administrador');
     $check = $pdo->prepare("SELECT id FROM users WHERE email = :email LIMIT 1");
     $check->execute([':email' => strtolower(trim($adminEmail))]);
 
@@ -137,7 +162,7 @@ try {
     }
 
     // ── Resumen final ──────────────────────────────────────────────────────
-    titulo('¡Seeder completado con éxito!');
+    titulo('Seeder completado con éxito');
     if (!$isCli) {
         echo '<p><a href="../public/index.php?route=auth.login">
               → Ir al login</a></p>';
