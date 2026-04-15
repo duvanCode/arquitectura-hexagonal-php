@@ -113,6 +113,47 @@ try {
             View::redirect('users.index');
             break;
 
+        case 'show':
+            $id         = isset($_GET['id']) ? trim((string) $_GET['id']) : '';
+            $controller = DependencyInjection::getUserController();
+            $user       = $controller->show($id);
+            View::render('users/show', [
+                'pageTitle' => 'Detalle de usuario',
+                'user'      => $user,
+                'message'   => Flash::message(),
+            ]);
+            break;
+
+        case 'edit':
+            $id         = isset($_GET['id']) ? trim((string) $_GET['id']) : '';
+            $controller = DependencyInjection::getUserController();
+            $user       = $controller->show($id);
+            View::render('users/edit', [
+                'pageTitle'     => 'Editar usuario',
+                'user'          => $user,
+                'roleOptions'   => UserRoleEnum::values(),
+                'statusOptions' => UserStatusEnum::values(),
+                'message'       => Flash::message(),
+                'errors'        => Flash::errors(),
+                'old'           => Flash::old(),
+            ]);
+            break;
+
+        case 'update':
+            $controller = DependencyInjection::getUserController();
+            $request    = new UpdateUserWebRequest(
+                $_POST['id']       ?? '',
+                $_POST['name']     ?? '',
+                $_POST['email']    ?? '',
+                $_POST['password'] ?? '',
+                $_POST['role']     ?? '',
+                $_POST['status']   ?? ''
+            );
+            $controller->update($request);
+            Flash::setSuccess('Usuario actualizado correctamente.');
+            View::redirect('users.index');
+            break;
+
         case 'delete':
             $controller = DependencyInjection::getUserController();
             $id         = isset($_POST['id']) ? trim((string) $_POST['id']) : '';
@@ -269,6 +310,12 @@ try {
         case 'users.store':
             Flash::setOld($_POST);
             View::redirect('users.create');
+            break;
+        case 'users.update':
+            Flash::setOld($_POST);
+            $editUserId = $_POST['id'] ?? '';
+            header('Location: ?route=users.edit&id=' . urlencode($editUserId));
+            exit;
             break;
         case 'auth.authenticate':
             Flash::setOld(['email' => $_POST['email'] ?? '']);
