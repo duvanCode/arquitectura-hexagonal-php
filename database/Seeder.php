@@ -11,12 +11,14 @@ declare(strict_types=1);
  *   http://localhost/arquitectura-hexagonal-php/database/Seeder.php
  */
 
-// ── Configuración de conexión ──────────────────────────────────────────────
-$host     = '127.0.0.1';
-$port     = 3306;
-$dbName   = 'crud_usuarios';
-$username = 'root';
-$password = '';          // <-- ajusta si tienes contraseña en MySQL
+// ── Configuración de conexión ─────────────────────────────────────────────
+// Prioridad: variables de entorno (Docker) → valores locales por defecto
+$host     = getenv('DB_HOST')          ?: '127.0.0.1';
+$port     = (int) (getenv('DB_PORT')   ?: 3306);
+$dbName   = getenv('DB_NAME')          ?: 'crud_usuarios';
+// En Docker usamos la contraseña root; localmente puede ser vacía
+$username = getenv('DB_ROOT_USER')     ?: 'root';
+$password = getenv('DB_ROOT_PASSWORD') ?: '';
 
 // ── Credenciales del usuario administrador inicial ─────────────────────────
 $adminName     = 'Administrador';

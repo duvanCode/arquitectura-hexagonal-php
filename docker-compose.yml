@@ -1,0 +1,101 @@
+version: '3.8'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Arquitectura Hexagonal PHP — Docker Compose de producción
+#
+# Para Dokploy:
+#   1. Crear nueva aplicación → tipo "Docker Compose"
+#   2. Apuntar al repositorio Git
+#   3. Definir las variables de entorno en el panel de Dokploy
+#   4. En el primer despliegue: añadir RUN_SEEDER=true para crear las tablas
+#      y el usuario administrador; quitarla en despliegues posteriores.
+#
+# Para uso local:
+#   cp .env.example .env  (y ajustar valores)
+#   docker compose up -d --build
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── Aplicación (PHP 8.2 + Nginx + Supervisor) ──────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hexagonal-php-app
+    container_name: hexagonal_app
+    restart: unless-stopped
+
+    # Variables de entorno — Dokploy las inyecta desde su panel
+    environment:
+      DB_HOST:         db
+      DB_PORT:         "3306"
+      DB_NAME:         ${DB_NAME:-crud_usuarios}
+      DB_USER:         ${DB_USER:-appuser}
+      DB_PASSWORD:     ${DB_PASSWORD:?Falta DB_PASSWORD}
+      DB_CHARSET:      utf8mb4
+      MAIL_HOST:       ${MAIL_HOST:-}
+      MAIL_PORT:       ${MAIL_PORT:-587}
+      MAIL_USERNAME:   ${MAIL_USERNAME:-}
+      MAIL_PASSWORD:   ${MAIL_PASSWORD:-}
+      MAIL_FROM:       ${MAIL_FROM:-}
+      MAIL_FROM_NAME:  ${MAIL_FROM_NAME:-App}
+      MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
+      # Poner en true solo en el primer despliegue para crear tablas y admin
+      RUN_SEEDER:      ${RUN_SEEDER:-false}
+
+    ports:
+      # En Dokploy este puerto lo gestiona Traefik; ajusta APP_PORT localmente
+      - "${APP_PORT:-8080}:80"
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    networks:
+      - hexagonal_net
+
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # ── Base de datos MySQL 8 ─────────────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: hexagonal_db
+    restart: unless-stopped
+
+    environment:
+      MYSQL_DATABASE:      ${DB_NAME:-crud_usuarios}
+      MYSQL_USER:          ${DB_USER:-appuser}
+      MYSQL_PASSWORD:      ${DB_PASSWORD:?Falta DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Falta DB_ROOT_PASSWORD}
+
+    volumes:
+      # Datos persistentes
+      - mysql_data:/var/lib/mysql
+      # Esquema inicial — solo se ejecuta si el volumen está vacío (primer arranque)
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+
+    networks:
+      - hexagonal_net
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+# ── Volúmenes persistentes ──────────────────────────────────────────────────
+volumes:
+  mysql_data:
+    driver: local
+
+# ── Red interna ─────────────────────────────────────────────────────────────
+networks:
+  hexagonal_net:
+    driver: bridge

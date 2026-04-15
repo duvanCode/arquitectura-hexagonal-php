@@ -1,0 +1,30 @@
+# Control de versiones
+.git/
+.gitignore
+
+# Entorno local (se genera en runtime desde variables de entorno)
+.env
+.env.local
+.env.*.local
+
+# Dependencias externas (no usamos Composer, pero por si acaso)
+vendor/
+
+# IDE y herramientas locales
+.idea/
+.vscode/
+*.code-workspace
+
+# Claude Code
+.claude/
+
+# Logs locales
+*.log
+logs/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Docker (evitar recursividad)
+docker-compose.override.yml
