@@ -30,8 +30,9 @@ services:
       DB_HOST:         db
       DB_PORT:         "3306"
       DB_NAME:         ${DB_NAME:-crud_usuarios}
-      DB_USER:         ${DB_USER:-appuser}
-      DB_PASSWORD:     ${DB_PASSWORD:-secret}
+      # La app se conecta siempre como root usando DB_ROOT_PASSWORD
+      DB_USER:         root
+      DB_PASSWORD:     ${DB_ROOT_PASSWORD:-rootsecret}
       DB_CHARSET:      utf8mb4
       MAIL_HOST:       ${MAIL_HOST:-}
       MAIL_PORT:       ${MAIL_PORT:-587}
@@ -54,9 +55,9 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_DATABASE:      ${DB_NAME:-crud_usuarios}
-      MYSQL_USER:          ${DB_USER:-appuser}
-      MYSQL_PASSWORD:      ${DB_PASSWORD:-secret}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootsecret}
+      # MYSQL_USER no se define aquí: MySQL prohíbe usar "root" como MYSQL_USER.
+      # La app se conecta directamente con root vía DB_ROOT_PASSWORD.
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
