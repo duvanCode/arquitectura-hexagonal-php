@@ -11,7 +11,7 @@
         <div class="alert-success"><?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?></div>
     <?php endif; ?>
 
-    <p>Introduce el correo con el que te registraste y te enviaremos una contraseña temporal.</p>
+    <p>Introduce el correo con el que te registraste y te enviaremos un enlace para crear una nueva contraseña. El enlace expira en <strong>1 hora</strong>.</p>
 
     <form method="POST" action="?route=auth.forgot.send">
         <div class="form-group">
@@ -24,7 +24,7 @@
             <?php endif; ?>
         </div>
 
-        <button type="submit" class="btn btn-primary">Enviar contraseña temporal</button>
+        <button type="submit" class="btn btn-primary">Enviar enlace de recuperación</button>
     </form>
 
     <p style="margin-top: 16px;">
