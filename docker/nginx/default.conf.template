@@ -1,0 +1,57 @@
+server {
+    listen ${APP_PORT};
+    server_name _;
+
+    root /var/www/html/public;
+    index index.php;
+
+    # Ocultar versión de Nginx
+    server_tokens off;
+
+    # Deshabilitar listado de directorios
+    autoindex off;
+
+    # Cabeceras de seguridad
+    add_header X-Frame-Options       "SAMEORIGIN"   always;
+    add_header X-Content-Type-Options "nosniff"      always;
+    add_header X-XSS-Protection      "1; mode=block" always;
+    add_header Referrer-Policy       "strict-origin-when-cross-origin" always;
+
+    # ── Rutas de la aplicación ────────────────────────────────────────────────
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # ── PHP via PHP-FPM local ─────────────────────────────────────────────────
+    location ~ \.php$ {
+        fastcgi_pass   127.0.0.1:9000;
+        fastcgi_index  index.php;
+        include        fastcgi_params;
+        fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param  PATH_INFO       $fastcgi_path_info;
+        fastcgi_read_timeout 60;
+        fastcgi_buffers 16 16k;
+        fastcgi_buffer_size 32k;
+    }
+
+    # ── Activos estáticos con caché ───────────────────────────────────────────
+    location ~* \.(css|js|ico|png|jpg|jpeg|gif|webp|woff|woff2|ttf|svg)$ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+        access_log off;
+    }
+
+    # ── Bloquear acceso a archivos ocultos y sensibles ────────────────────────
+    location ~ /\. {
+        deny all;
+    }
+
+    location ~ \.(env|gitignore|htaccess|sql)$ {
+        deny all;
+    }
+
+    # ── Logs ──────────────────────────────────────────────────────────────────
+    access_log  /dev/stdout;
+    error_log   /dev/stderr warn;
+}

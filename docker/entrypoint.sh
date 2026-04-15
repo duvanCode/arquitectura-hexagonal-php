@@ -56,5 +56,16 @@ if [ "${RUN_SEEDER:-false}" = "true" ]; then
     echo "[entrypoint] Seeder completado."
 fi
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Generar la configuración de Nginx con el puerto dinámico (APP_PORT).
+# envsubst reemplaza ${APP_PORT} en la plantilla y escribe el .conf final.
+# ─────────────────────────────────────────────────────────────────────────────
+APP_PORT="${APP_PORT:-8080}"
+envsubst '${APP_PORT}' \
+    < /etc/nginx/http.d/default.conf.template \
+    > /etc/nginx/http.d/default.conf
+
+echo "[entrypoint] Nginx configurado para escuchar en el puerto ${APP_PORT}."
+
 echo "[entrypoint] Iniciando servicios..."
 exec "$@"

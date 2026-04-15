@@ -12,6 +12,7 @@ RUN apk add --no-cache \
         supervisor \
         bash \
         netcat-openbsd \
+        gettext \
     && docker-php-ext-install pdo pdo_mysql \
     && rm -rf /var/cache/apk/*
 
@@ -21,7 +22,8 @@ COPY docker/php/php.ini /usr/local/etc/php/conf.d/custom.ini
 # ── Configuración Nginx ───────────────────────────────────────────────────────
 # Usar www-data como usuario de Nginx (igual que php-fpm)
 RUN sed -i 's/user nginx;/user www-data;/' /etc/nginx/nginx.conf 2>/dev/null || true
-COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
+# Plantilla — el entrypoint genera el .conf definitivo con envsubst
+COPY docker/nginx/default.conf.template /etc/nginx/http.d/default.conf.template
 
 # ── Configuración Supervisor ──────────────────────────────────────────────────
 COPY docker/supervisor/supervisord.conf /etc/supervisor.d/app.ini
@@ -39,7 +41,7 @@ RUN rm -f .env \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
 
-EXPOSE 80
+EXPOSE ${APP_PORT:-8080}
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]

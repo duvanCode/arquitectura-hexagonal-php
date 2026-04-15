@@ -42,7 +42,7 @@ services:
       MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
       RUN_SEEDER:      ${RUN_SEEDER:-false}
     ports:
-      - "${APP_PORT:-8080}:80"
+      - "${APP_PORT:-8080}:${APP_PORT:-8080}"
     # Sin depends_on — el entrypoint.sh espera a MySQL con nc antes de arrancar
     networks:
       - hexagonal_net
