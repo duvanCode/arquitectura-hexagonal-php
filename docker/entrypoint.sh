@@ -26,6 +26,27 @@ EOF
 chmod 640 /var/www/html/.env
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Esperar a que MySQL esté escuchando en el puerto antes de continuar.
+# Se usa nc (netcat) para no depender del healthcheck de Docker.
+# ─────────────────────────────────────────────────────────────────────────────
+DB_HOST_WAIT="${DB_HOST:-db}"
+DB_PORT_WAIT="${DB_PORT:-3306}"
+MAX_TRIES=40
+TRIES=0
+
+echo "[entrypoint] Esperando a MySQL en ${DB_HOST_WAIT}:${DB_PORT_WAIT}..."
+until nc -z "$DB_HOST_WAIT" "$DB_PORT_WAIT" 2>/dev/null; do
+    TRIES=$((TRIES + 1))
+    if [ "$TRIES" -ge "$MAX_TRIES" ]; then
+        echo "[entrypoint] ERROR: MySQL no respondió tras ${MAX_TRIES} intentos. Abortando." >&2
+        exit 1
+    fi
+    echo "[entrypoint] Intento ${TRIES}/${MAX_TRIES} — reintentando en 3s..."
+    sleep 3
+done
+echo "[entrypoint] MySQL disponible."
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Ejecutar el Seeder si se solicita (útil en el primer despliegue)
 # Para activarlo: variable de entorno RUN_SEEDER=true
 # ─────────────────────────────────────────────────────────────────────────────

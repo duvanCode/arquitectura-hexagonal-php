@@ -11,6 +11,7 @@ RUN apk add --no-cache \
         nginx \
         supervisor \
         bash \
+        netcat-openbsd \
     && docker-php-ext-install pdo pdo_mysql \
     && rm -rf /var/cache/apk/*
 

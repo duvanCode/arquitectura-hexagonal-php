@@ -32,7 +32,7 @@ services:
       DB_PORT:         "3306"
       DB_NAME:         ${DB_NAME:-crud_usuarios}
       DB_USER:         ${DB_USER:-appuser}
-      DB_PASSWORD:     ${DB_PASSWORD:?Falta DB_PASSWORD}
+      DB_PASSWORD:     ${DB_PASSWORD:-}
       DB_CHARSET:      utf8mb4
       MAIL_HOST:       ${MAIL_HOST:-}
       MAIL_PORT:       ${MAIL_PORT:-587}
@@ -48,19 +48,12 @@ services:
       # En Dokploy este puerto lo gestiona Traefik; ajusta APP_PORT localmente
       - "${APP_PORT:-8080}:80"
 
+    # Sin condition: el entrypoint.sh espera a MySQL internamente con nc
     depends_on:
-      db:
-        condition: service_healthy
+      - db
 
     networks:
       - hexagonal_net
-
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 15s
 
   # ── Base de datos MySQL 8 ─────────────────────────────────────────────────
   db:
@@ -71,8 +64,8 @@ services:
     environment:
       MYSQL_DATABASE:      ${DB_NAME:-crud_usuarios}
       MYSQL_USER:          ${DB_USER:-appuser}
-      MYSQL_PASSWORD:      ${DB_PASSWORD:?Falta DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Falta DB_ROOT_PASSWORD}
+      MYSQL_PASSWORD:      ${DB_PASSWORD:-}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
 
     volumes:
       # Datos persistentes
@@ -82,13 +75,6 @@ services:
 
     networks:
       - hexagonal_net
-
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 --silent 2>/dev/null || exit 1"]
-      interval: 15s
-      timeout: 10s
-      retries: 20
-      start_period: 90s
 
 # ── Volúmenes persistentes ──────────────────────────────────────────────────
 volumes:
