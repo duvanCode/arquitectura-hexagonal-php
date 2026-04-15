@@ -5,6 +5,7 @@ require_once __DIR__ . '/../Ports/In/ForgotPasswordUseCase.php';
 require_once __DIR__ . '/../Ports/Out/GetUserByEmailPort.php';
 require_once __DIR__ . '/../Ports/Out/SavePasswordResetPort.php';
 require_once __DIR__ . '/../Ports/Out/SendMailPort.php';
+require_once __DIR__ . '/../../Domain/ValueObjects/UserEmail.php';
 
 final class ForgotPasswordService implements ForgotPasswordUseCase
 {
@@ -25,7 +26,7 @@ final class ForgotPasswordService implements ForgotPasswordUseCase
     public function execute(ForgotPasswordCommand $command): void
     {
         // No revelar si el correo existe o no (seguridad)
-        $user = $this->getUserByEmailPort->getByEmail($command->getEmail());
+        $user = $this->getUserByEmailPort->getByEmail(new UserEmail($command->getEmail()));
         if ($user === null) {
             return;
         }

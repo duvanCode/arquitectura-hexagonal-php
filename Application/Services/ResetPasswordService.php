@@ -9,6 +9,7 @@ require_once __DIR__ . '/../Ports/Out/UpdateUserPort.php';
 require_once __DIR__ . '/../../Domain/Exceptions/InvalidResetTokenException.php';
 require_once __DIR__ . '/../../Domain/Exceptions/ResetTokenExpiredException.php';
 require_once __DIR__ . '/../../Domain/ValueObjects/UserPassword.php';
+require_once __DIR__ . '/../../Domain/ValueObjects/UserEmail.php';
 
 final class ResetPasswordService implements ResetPasswordUseCase
 {
@@ -45,7 +46,7 @@ final class ResetPasswordService implements ResetPasswordUseCase
             throw ResetTokenExpiredException::becauseTokenHasExpired();
         }
 
-        $user = $this->getUserByEmailPort->getByEmail($resetData->email());
+        $user = $this->getUserByEmailPort->getByEmail(new UserEmail($resetData->email()));
         if ($user === null) {
             throw InvalidResetTokenException::becauseTokenNotFound();
         }
