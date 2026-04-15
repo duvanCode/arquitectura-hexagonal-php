@@ -2,23 +2,25 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/ClassLoader.php';
+require_once __DIR__ . '/Env.php';
 
 final class DependencyInjection
 {
     public static function boot(): void
     {
+        Env::load(dirname(__DIR__) . '/.env');
         ClassLoader::register();
     }
 
     public static function getConnection(): Connection
     {
         return new Connection(
-            '127.0.0.1',
-            3306,
-            'crud_usuarios',
-            'root',
-            '', // tu contraseña de BD
-            'utf8mb4'
+            Env::get('DB_HOST', '127.0.0.1'),
+            Env::getInt('DB_PORT', 3306),
+            Env::get('DB_NAME', 'crud_usuarios'),
+            Env::get('DB_USER', 'root'),
+            Env::get('DB_PASSWORD', ''),
+            Env::get('DB_CHARSET', 'utf8mb4')
         );
     }
 

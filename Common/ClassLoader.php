@@ -74,6 +74,7 @@ final class ClassLoader
         'Flash'                => 'Infrastructure/Entrypoints/Web/Presentation/Flash.php',
 
         // Common
+        'Env'                 => 'Common/Env.php',
         'DependencyInjection' => 'Common/DependencyInjection.php',
     );
 

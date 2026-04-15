@@ -16,6 +16,7 @@ declare(strict_types=1);
     }
 })();
 
+require_once __DIR__ . '/../Common/Env.php';
 require_once __DIR__ . '/../Common/ClassLoader.php';
 require_once __DIR__ . '/../Common/DependencyInjection.php';
 require_once __DIR__ . '/../Infrastructure/Entrypoints/Web/Presentation/View.php';
