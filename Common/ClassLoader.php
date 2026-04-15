@@ -55,12 +55,70 @@ final class ClassLoader
         'LoginService'         => 'Application/Services/LoginService.php',
         'UserApplicationMapper' => 'Application/Services/Mappers/UserApplicationMapper.php',
 
+        // Domain - Movie Exceptions
+        'InvalidMovieIdException'          => 'Domain/Exceptions/InvalidMovieIdException.php',
+        'InvalidMovieTitleException'       => 'Domain/Exceptions/InvalidMovieTitleException.php',
+        'InvalidMovieDirectorException'    => 'Domain/Exceptions/InvalidMovieDirectorException.php',
+        'InvalidMovieDurationException'    => 'Domain/Exceptions/InvalidMovieDurationException.php',
+        'InvalidMovieReleaseDateException' => 'Domain/Exceptions/InvalidMovieReleaseDateException.php',
+        'MovieNotFoundException'           => 'Domain/Exceptions/MovieNotFoundException.php',
+        // Domain - Movie Enums
+        'MovieGenreEnum'     => 'Domain/Enums/MovieGenreEnum.php',
+        'MovieAgeRatingEnum' => 'Domain/Enums/MovieAgeRatingEnum.php',
+        // Domain - Movie Value Objects
+        'MovieId'          => 'Domain/ValueObjects/MovieId.php',
+        'MovieTitle'       => 'Domain/ValueObjects/MovieTitle.php',
+        'MovieDirector'    => 'Domain/ValueObjects/MovieDirector.php',
+        'MovieDuration'    => 'Domain/ValueObjects/MovieDuration.php',
+        'MovieReleaseDate' => 'Domain/ValueObjects/MovieReleaseDate.php',
+        'MovieCountry'     => 'Domain/ValueObjects/MovieCountry.php',
+        'MovieLanguage'    => 'Domain/ValueObjects/MovieLanguage.php',
+        'MovieProducer'    => 'Domain/ValueObjects/MovieProducer.php',
+        'MovieSynopsis'    => 'Domain/ValueObjects/MovieSynopsis.php',
+        // Domain - Movie Model
+        'MovieModel' => 'Domain/Models/MovieModel.php',
+        // Domain - Movie Events
+        'MovieCreatedDomainEvent' => 'Domain/Events/MovieCreatedDomainEvent.php',
+        'MovieUpdatedDomainEvent' => 'Domain/Events/MovieUpdatedDomainEvent.php',
+        'MovieDeletedDomainEvent' => 'Domain/Events/MovieDeletedDomainEvent.php',
+
+        // Application - Movie Ports In
+        'CreateMovieUseCase'  => 'Application/Ports/In/CreateMovieUseCase.php',
+        'UpdateMovieUseCase'  => 'Application/Ports/In/UpdateMovieUseCase.php',
+        'GetMovieByIdUseCase' => 'Application/Ports/In/GetMovieByIdUseCase.php',
+        'GetAllMoviesUseCase' => 'Application/Ports/In/GetAllMoviesUseCase.php',
+        'DeleteMovieUseCase'  => 'Application/Ports/In/DeleteMovieUseCase.php',
+        // Application - Movie Ports Out
+        'SaveMoviePort'       => 'Application/Ports/Out/SaveMoviePort.php',
+        'UpdateMoviePort'     => 'Application/Ports/Out/UpdateMoviePort.php',
+        'GetMovieByIdPort'    => 'Application/Ports/Out/GetMovieByIdPort.php',
+        'GetAllMoviesPort'    => 'Application/Ports/Out/GetAllMoviesPort.php',
+        'DeleteMoviePort'     => 'Application/Ports/Out/DeleteMoviePort.php',
+        // Application - Movie Commands
+        'CreateMovieCommand' => 'Application/Services/Dto/Commands/CreateMovieCommand.php',
+        'UpdateMovieCommand' => 'Application/Services/Dto/Commands/UpdateMovieCommand.php',
+        'DeleteMovieCommand' => 'Application/Services/Dto/Commands/DeleteMovieCommand.php',
+        // Application - Movie Queries
+        'GetMovieByIdQuery' => 'Application/Services/Dto/Queries/GetMovieByIdQuery.php',
+        'GetAllMoviesQuery' => 'Application/Services/Dto/Queries/GetAllMoviesQuery.php',
+        // Application - Movie Services
+        'CreateMovieService'    => 'Application/Services/CreateMovieService.php',
+        'UpdateMovieService'    => 'Application/Services/UpdateMovieService.php',
+        'GetMovieByIdService'   => 'Application/Services/GetMovieByIdService.php',
+        'GetAllMoviesService'   => 'Application/Services/GetAllMoviesService.php',
+        'DeleteMovieService'    => 'Application/Services/DeleteMovieService.php',
+        'MovieApplicationMapper' => 'Application/Services/Mappers/MovieApplicationMapper.php',
+
         // Infrastructure - MySQL
         'Connection'           => 'Infrastructure/Adapters/Persistence/MySQL/Config/Connection.php',
         'UserPersistenceDto'   => 'Infrastructure/Adapters/Persistence/MySQL/Dto/UserPersistenceDto.php',
         'UserEntity'           => 'Infrastructure/Adapters/Persistence/MySQL/Entity/UserEntity.php',
         'UserPersistenceMapper' => 'Infrastructure/Adapters/Persistence/MySQL/Mapper/UserPersistenceMapper.php',
         'UserRepositoryMySQL'  => 'Infrastructure/Adapters/Persistence/MySQL/Repository/UserRepositoryMySQL.php',
+        'MoviePersistenceDto'   => 'Infrastructure/Adapters/Persistence/MySQL/Dto/MoviePersistenceDto.php',
+        'MovieEntity'           => 'Infrastructure/Adapters/Persistence/MySQL/Entity/MovieEntity.php',
+        'MoviePersistenceMapper' => 'Infrastructure/Adapters/Persistence/MySQL/Mapper/MoviePersistenceMapper.php',
+        'MovieRepositoryMySQL'  => 'Infrastructure/Adapters/Persistence/MySQL/Repository/MovieRepositoryMySQL.php',
 
         // Infrastructure - Entrypoints Web
         'CreateUserWebRequest' => 'Infrastructure/Entrypoints/Web/Controllers/Dto/CreateUserRequest.php',
@@ -69,6 +127,11 @@ final class ClassLoader
         'UserResponse'         => 'Infrastructure/Entrypoints/Web/Controllers/Dto/UserResponse.php',
         'UserWebMapper'        => 'Infrastructure/Entrypoints/Web/Controllers/Mapper/UserWebMapper.php',
         'UserController'       => 'Infrastructure/Entrypoints/Web/Controllers/UserController.php',
+        'CreateMovieWebRequest' => 'Infrastructure/Entrypoints/Web/Controllers/Dto/CreateMovieRequest.php',
+        'UpdateMovieWebRequest' => 'Infrastructure/Entrypoints/Web/Controllers/Dto/UpdateMovieRequest.php',
+        'MovieResponse'         => 'Infrastructure/Entrypoints/Web/Controllers/Dto/MovieResponse.php',
+        'MovieWebMapper'        => 'Infrastructure/Entrypoints/Web/Controllers/Mapper/MovieWebMapper.php',
+        'MovieController'       => 'Infrastructure/Entrypoints/Web/Controllers/MovieController.php',
         'WebRoutes'            => 'Infrastructure/Entrypoints/Web/Controllers/Config/WebRoutes.php',
         'View'                 => 'Infrastructure/Entrypoints/Web/Presentation/View.php',
         'Flash'                => 'Infrastructure/Entrypoints/Web/Presentation/Flash.php',

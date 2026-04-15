@@ -23,3 +23,23 @@ CREATE TABLE IF NOT EXISTS users (
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS movies (
+    id                 VARCHAR(36)   NOT NULL,
+    nombre             VARCHAR(200)  NOT NULL,
+    titulo_original    VARCHAR(200)  NOT NULL,
+    director           VARCHAR(150)  NOT NULL,
+    genero             VARCHAR(50)   NOT NULL,
+    duracion_minutos   INT           NOT NULL,
+    fecha_estreno      DATE          NOT NULL,
+    pais_origen        VARCHAR(100)  NOT NULL,
+    idioma_original    VARCHAR(100)  NOT NULL,
+    clasificacion_edad VARCHAR(30)   NOT NULL,
+    productora         VARCHAR(200)  NOT NULL,
+    sinopsis           TEXT          NOT NULL,
+    created_at         DATETIME      NOT NULL,
+    updated_at         DATETIME      NOT NULL,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;

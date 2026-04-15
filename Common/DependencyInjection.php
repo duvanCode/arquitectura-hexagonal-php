@@ -88,4 +88,62 @@ final class DependencyInjection
             self::getUserWebMapper()
         );
     }
+
+    // -------------------------------------------------------------------------
+    // Movie
+    // -------------------------------------------------------------------------
+
+    public static function getMoviePersistenceMapper(): MoviePersistenceMapper
+    {
+        return new MoviePersistenceMapper();
+    }
+
+    public static function getMovieRepository(): MovieRepositoryMySQL
+    {
+        return new MovieRepositoryMySQL(self::getPdo(), self::getMoviePersistenceMapper());
+    }
+
+    public static function getCreateMovieUseCase(): CreateMovieUseCase
+    {
+        return new CreateMovieService(self::getMovieRepository());
+    }
+
+    public static function getUpdateMovieUseCase(): UpdateMovieUseCase
+    {
+        $repo = self::getMovieRepository();
+        return new UpdateMovieService($repo, $repo);
+    }
+
+    public static function getDeleteMovieUseCase(): DeleteMovieUseCase
+    {
+        $repo = self::getMovieRepository();
+        return new DeleteMovieService($repo, $repo);
+    }
+
+    public static function getGetMovieByIdUseCase(): GetMovieByIdUseCase
+    {
+        return new GetMovieByIdService(self::getMovieRepository());
+    }
+
+    public static function getGetAllMoviesUseCase(): GetAllMoviesUseCase
+    {
+        return new GetAllMoviesService(self::getMovieRepository());
+    }
+
+    public static function getMovieWebMapper(): MovieWebMapper
+    {
+        return new MovieWebMapper();
+    }
+
+    public static function getMovieController(): MovieController
+    {
+        return new MovieController(
+            self::getCreateMovieUseCase(),
+            self::getUpdateMovieUseCase(),
+            self::getGetMovieByIdUseCase(),
+            self::getGetAllMoviesUseCase(),
+            self::getDeleteMovieUseCase(),
+            self::getMovieWebMapper()
+        );
+    }
 }

@@ -59,7 +59,7 @@ if ($httpMethod !== $definition['method']) {
 }
 
 // Protect all non-public routes
-$publicActions = array('home', 'login', 'authenticate', 'logout', 'forgot', 'forgot.send', 'create', 'store');
+$publicActions = array('home', 'login', 'authenticate', 'logout', 'forgot', 'forgot.send', 'create', 'store', 'movies.create', 'movies.store');
 if (!in_array($definition['action'], $publicActions, true) && !isLoggedIn()) {
     Flash::setMessage('Debes iniciar sesión para acceder a esta sección.');
     View::redirect('auth.login');
@@ -121,6 +121,109 @@ try {
             View::redirect('users.index');
             break;
 
+        // ----------------------------------------------------------------
+        // Movies
+        // ----------------------------------------------------------------
+
+        case 'movies.index':
+            $controller = DependencyInjection::getMovieController();
+            $movies     = $controller->index();
+            View::render('movies/list', [
+                'pageTitle' => 'Lista de películas',
+                'movies'    => $movies,
+                'message'   => Flash::message(),
+                'success'   => Flash::success(),
+            ]);
+            break;
+
+        case 'movies.create':
+            View::render('movies/create', [
+                'pageTitle'       => 'Nueva película',
+                'genreOptions'    => MovieGenreEnum::values(),
+                'ageRatingOptions' => MovieAgeRatingEnum::values(),
+                'message'         => Flash::message(),
+                'errors'          => Flash::errors(),
+                'old'             => Flash::old(),
+            ]);
+            break;
+
+        case 'movies.store':
+            $controller = DependencyInjection::getMovieController();
+            $id         = bin2hex(random_bytes(16));
+            $request    = new CreateMovieWebRequest(
+                $id,
+                $_POST['nombre']             ?? '',
+                $_POST['titulo_original']    ?? '',
+                $_POST['director']           ?? '',
+                $_POST['genero']             ?? '',
+                $_POST['duracion_minutos']   ?? '',
+                $_POST['fecha_estreno']      ?? '',
+                $_POST['pais_origen']        ?? '',
+                $_POST['idioma_original']    ?? '',
+                $_POST['clasificacion_edad'] ?? '',
+                $_POST['productora']         ?? '',
+                $_POST['sinopsis']           ?? ''
+            );
+            $controller->store($request);
+            Flash::setSuccess('Película registrada correctamente.');
+            View::redirect('movies.index');
+            break;
+
+        case 'movies.show':
+            $id         = isset($_GET['id']) ? trim((string) $_GET['id']) : '';
+            $controller = DependencyInjection::getMovieController();
+            $movie      = $controller->show($id);
+            View::render('movies/show', [
+                'pageTitle' => 'Detalle de película',
+                'movie'     => $movie,
+                'message'   => Flash::message(),
+            ]);
+            break;
+
+        case 'movies.edit':
+            $id         = isset($_GET['id']) ? trim((string) $_GET['id']) : '';
+            $controller = DependencyInjection::getMovieController();
+            $movie      = $controller->show($id);
+            View::render('movies/edit', [
+                'pageTitle'        => 'Editar película',
+                'movie'            => $movie,
+                'genreOptions'     => MovieGenreEnum::values(),
+                'ageRatingOptions' => MovieAgeRatingEnum::values(),
+                'message'          => Flash::message(),
+                'errors'           => Flash::errors(),
+                'old'              => Flash::old(),
+            ]);
+            break;
+
+        case 'movies.update':
+            $controller = DependencyInjection::getMovieController();
+            $request    = new UpdateMovieWebRequest(
+                $_POST['id']                 ?? '',
+                $_POST['nombre']             ?? '',
+                $_POST['titulo_original']    ?? '',
+                $_POST['director']           ?? '',
+                $_POST['genero']             ?? '',
+                $_POST['duracion_minutos']   ?? '',
+                $_POST['fecha_estreno']      ?? '',
+                $_POST['pais_origen']        ?? '',
+                $_POST['idioma_original']    ?? '',
+                $_POST['clasificacion_edad'] ?? '',
+                $_POST['productora']         ?? '',
+                $_POST['sinopsis']           ?? ''
+            );
+            $controller->update($request);
+            Flash::setSuccess('Película actualizada correctamente.');
+            View::redirect('movies.index');
+            break;
+
+        case 'movies.delete':
+            $controller = DependencyInjection::getMovieController();
+            $id         = isset($_POST['id']) ? trim((string) $_POST['id']) : '';
+            $controller->delete($id);
+            Flash::setSuccess('Película eliminada correctamente.');
+            View::redirect('movies.index');
+            break;
+
         case 'login':
             if (isLoggedIn()) {
                 View::redirect('home');
@@ -170,6 +273,16 @@ try {
         case 'auth.authenticate':
             Flash::setOld(['email' => $_POST['email'] ?? '']);
             View::redirect('auth.login');
+            break;
+        case 'movies.store':
+            Flash::setOld($_POST);
+            View::redirect('movies.create');
+            break;
+        case 'movies.update':
+            Flash::setOld($_POST);
+            $editId = $_POST['id'] ?? '';
+            header('Location: ?route=movies.edit&id=' . urlencode($editId));
+            exit;
             break;
         default:
             View::redirect('home');
