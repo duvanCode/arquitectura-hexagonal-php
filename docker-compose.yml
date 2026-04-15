@@ -4,14 +4,14 @@ version: '3.8'
 # Arquitectura Hexagonal PHP — Docker Compose de producción
 #
 # Para Dokploy:
-#   1. Crear nueva aplicación → tipo "Docker Compose"
+#   1. Nueva aplicación → tipo "Docker Compose"
 #   2. Apuntar al repositorio Git
-#   3. Definir las variables de entorno en el panel de Dokploy
-#   4. En el primer despliegue: añadir RUN_SEEDER=true para crear las tablas
-#      y el usuario administrador; quitarla en despliegues posteriores.
+#   3. Definir variables de entorno en el panel de Dokploy (ver .env.example)
+#   4. Primer despliegue: añadir RUN_SEEDER=true → crea tablas + usuario admin
+#      Despliegues siguientes: RUN_SEEDER=false (o no definirla)
 #
 # Para uso local:
-#   cp .env.example .env  (y ajustar valores)
+#   cp .env.example .env   # ajustar valores
 #   docker compose up -d --build
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -25,14 +25,12 @@ services:
     image: hexagonal-php-app
     container_name: hexagonal_app
     restart: unless-stopped
-
-    # Variables de entorno — Dokploy las inyecta desde su panel
     environment:
       DB_HOST:         db
       DB_PORT:         "3306"
       DB_NAME:         ${DB_NAME:-crud_usuarios}
       DB_USER:         ${DB_USER:-appuser}
-      DB_PASSWORD:     ${DB_PASSWORD:-}
+      DB_PASSWORD:     ${DB_PASSWORD:-secret}
       DB_CHARSET:      utf8mb4
       MAIL_HOST:       ${MAIL_HOST:-}
       MAIL_PORT:       ${MAIL_PORT:-587}
@@ -41,17 +39,10 @@ services:
       MAIL_FROM:       ${MAIL_FROM:-}
       MAIL_FROM_NAME:  ${MAIL_FROM_NAME:-App}
       MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
-      # Poner en true solo en el primer despliegue para crear tablas y admin
       RUN_SEEDER:      ${RUN_SEEDER:-false}
-
     ports:
-      # En Dokploy este puerto lo gestiona Traefik; ajusta APP_PORT localmente
       - "${APP_PORT:-8080}:80"
-
-    # Sin condition: el entrypoint.sh espera a MySQL internamente con nc
-    depends_on:
-      - db
-
+    # Sin depends_on — el entrypoint.sh espera a MySQL con nc antes de arrancar
     networks:
       - hexagonal_net
 
@@ -60,28 +51,22 @@ services:
     image: mysql:8.0
     container_name: hexagonal_db
     restart: unless-stopped
-
     environment:
       MYSQL_DATABASE:      ${DB_NAME:-crud_usuarios}
       MYSQL_USER:          ${DB_USER:-appuser}
-      MYSQL_PASSWORD:      ${DB_PASSWORD:-}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
-
+      MYSQL_PASSWORD:      ${DB_PASSWORD:-secret}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootsecret}
     volumes:
-      # Datos persistentes
       - mysql_data:/var/lib/mysql
-      # Esquema inicial — solo se ejecuta si el volumen está vacío (primer arranque)
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
-
     networks:
       - hexagonal_net
 
-# ── Volúmenes persistentes ──────────────────────────────────────────────────
+# ── Volúmenes ─────────────────────────────────────────────────────────────
 volumes:
   mysql_data:
     driver: local
 
-# ── Red interna ─────────────────────────────────────────────────────────────
+# ── Red interna ───────────────────────────────────────────────────────────
 networks:
   hexagonal_net:
     driver: bridge
