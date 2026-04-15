@@ -24,6 +24,18 @@ CREATE TABLE IF NOT EXISTS users (
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS password_resets (
+    token      VARCHAR(64)  NOT NULL,
+    email      VARCHAR(150) NOT NULL,
+    expires_at DATETIME     NOT NULL,
+    used       TINYINT(1)   NOT NULL DEFAULT 0,
+    created_at DATETIME     NOT NULL,
+    PRIMARY KEY (token),
+    KEY idx_password_resets_email (email)
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS movies (
     id                 VARCHAR(36)   NOT NULL,
     nombre             VARCHAR(200)  NOT NULL,

@@ -59,7 +59,7 @@ if ($httpMethod !== $definition['method']) {
 }
 
 // Protect all non-public routes
-$publicActions = array('home', 'login', 'authenticate', 'logout', 'forgot', 'forgot.send', 'create', 'store', 'movies.create', 'movies.store');
+$publicActions = array('home', 'login', 'authenticate', 'logout', 'forgot', 'forgot.send', 'auth.reset', 'auth.reset.send', 'create', 'store', 'movies.create', 'movies.store');
 if (!in_array($definition['action'], $publicActions, true) && !isLoggedIn()) {
     Flash::setMessage('Debes iniciar sesión para acceder a esta sección.');
     View::redirect('auth.login');
@@ -296,6 +296,51 @@ try {
             View::redirect('home');
             break;
 
+        case 'forgot':
+            if (isLoggedIn()) {
+                View::redirect('home');
+            }
+            View::render('auth/forgot-password', [
+                'pageTitle' => 'Recuperar contraseña',
+                'message'   => Flash::message(),
+                'success'   => Flash::success(),
+                'errors'    => Flash::errors(),
+                'old'       => Flash::old(),
+            ]);
+            break;
+
+        case 'forgot.send':
+            $scheme  = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+            $baseUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
+            $command = new ForgotPasswordCommand($_POST['email'] ?? '', $baseUrl);
+            DependencyInjection::getForgotPasswordUseCase()->execute($command);
+            Flash::setSuccess('Si el correo está registrado recibirás un enlace en breve.');
+            View::redirect('auth.forgot');
+            break;
+
+        case 'auth.reset':
+            if (isLoggedIn()) {
+                View::redirect('home');
+            }
+            View::render('auth/reset-password', [
+                'pageTitle' => 'Nueva contraseña',
+                'token'     => isset($_GET['token']) ? trim((string) $_GET['token']) : '',
+                'message'   => Flash::message(),
+                'errors'    => Flash::errors(),
+            ]);
+            break;
+
+        case 'auth.reset.send':
+            $command = new ResetPasswordCommand(
+                $_POST['token']                 ?? '',
+                $_POST['password']              ?? '',
+                $_POST['password_confirmation'] ?? ''
+            );
+            DependencyInjection::getResetPasswordUseCase()->execute($command);
+            Flash::setSuccess('Contraseña actualizada. Ya puedes iniciar sesión.');
+            View::redirect('auth.login');
+            break;
+
         case 'logout':
             session_destroy();
             header('Location: ?route=auth.login');
@@ -320,6 +365,15 @@ try {
         case 'auth.authenticate':
             Flash::setOld(['email' => $_POST['email'] ?? '']);
             View::redirect('auth.login');
+            break;
+        case 'auth.forgot.send':
+            Flash::setOld(['email' => $_POST['email'] ?? '']);
+            View::redirect('auth.forgot');
+            break;
+        case 'auth.reset.send':
+            $resetToken = $_POST['token'] ?? '';
+            header('Location: ?route=auth.reset&token=' . urlencode($resetToken));
+            exit;
             break;
         case 'movies.store':
             Flash::setOld($_POST);

@@ -25,7 +25,9 @@ final class WebRoutes
             'auth.authenticate' => array('method' => 'POST', 'action' => 'authenticate'),
             'auth.logout'       => array('method' => 'GET',  'action' => 'logout'),
             'auth.forgot'       => array('method' => 'GET',  'action' => 'forgot'),
-            'auth.forgot.send'  => array('method' => 'POST', 'action' => 'forgot.send')
+            'auth.forgot.send'  => array('method' => 'POST', 'action' => 'forgot.send'),
+            'auth.reset'        => array('method' => 'GET',  'action' => 'auth.reset'),
+            'auth.reset.send'   => array('method' => 'POST', 'action' => 'auth.reset.send')
         );
     }
 }

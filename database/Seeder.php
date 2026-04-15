@@ -102,8 +102,25 @@ try {
     ");
     ok("Tabla 'users' lista");
 
-    // 5. Crear la tabla movies
-    titulo('Paso 4: Crear tabla movies');
+    // 5. Crear la tabla password_resets
+    titulo('Paso 4: Crear tabla password_resets');
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS password_resets (
+            token      VARCHAR(64)  NOT NULL,
+            email      VARCHAR(150) NOT NULL,
+            expires_at DATETIME     NOT NULL,
+            used       TINYINT(1)   NOT NULL DEFAULT 0,
+            created_at DATETIME     NOT NULL,
+            PRIMARY KEY (token),
+            KEY idx_password_resets_email (email)
+        ) ENGINE=InnoDB
+          DEFAULT CHARSET=utf8mb4
+          COLLATE=utf8mb4_unicode_ci
+    ");
+    ok("Tabla 'password_resets' lista");
+
+    // 6. Crear la tabla movies
+    titulo('Paso 5: Crear tabla movies');
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS movies (
             id                 VARCHAR(36)  NOT NULL,
@@ -127,8 +144,8 @@ try {
     ");
     ok("Tabla 'movies' lista");
 
-    // 6. Verificar si el admin ya existe
-    titulo('Paso 5: Crear usuario administrador');
+    // 7. Verificar si el admin ya existe
+    titulo('Paso 6: Crear usuario administrador');
     $check = $pdo->prepare("SELECT id FROM users WHERE email = :email LIMIT 1");
     $check->execute([':email' => strtolower(trim($adminEmail))]);
 

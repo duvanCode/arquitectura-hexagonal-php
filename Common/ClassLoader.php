@@ -82,6 +82,31 @@ final class ClassLoader
         'MovieUpdatedDomainEvent' => 'Domain/Events/MovieUpdatedDomainEvent.php',
         'MovieDeletedDomainEvent' => 'Domain/Events/MovieDeletedDomainEvent.php',
 
+        // Domain - Password Reset Exceptions
+        'InvalidResetTokenException'  => 'Domain/Exceptions/InvalidResetTokenException.php',
+        'ResetTokenExpiredException'  => 'Domain/Exceptions/ResetTokenExpiredException.php',
+
+        // Application - Password Reset Ports In
+        'ForgotPasswordUseCase' => 'Application/Ports/In/ForgotPasswordUseCase.php',
+        'ResetPasswordUseCase'  => 'Application/Ports/In/ResetPasswordUseCase.php',
+        // Application - Password Reset Ports Out
+        'SavePasswordResetPort'       => 'Application/Ports/Out/SavePasswordResetPort.php',
+        'FindPasswordResetPort'       => 'Application/Ports/Out/FindPasswordResetPort.php',
+        'InvalidatePasswordResetPort' => 'Application/Ports/Out/InvalidatePasswordResetPort.php',
+        'SendMailPort'                => 'Application/Ports/Out/SendMailPort.php',
+        // Application - Password Reset Commands & Data
+        'ForgotPasswordCommand' => 'Application/Services/Dto/Commands/ForgotPasswordCommand.php',
+        'ResetPasswordCommand'  => 'Application/Services/Dto/Commands/ResetPasswordCommand.php',
+        'PasswordResetData'     => 'Application/Services/Dto/PasswordResetData.php',
+        // Application - Password Reset Services
+        'ForgotPasswordService' => 'Application/Services/ForgotPasswordService.php',
+        'ResetPasswordService'  => 'Application/Services/ResetPasswordService.php',
+
+        // Infrastructure - Mail
+        'SmtpMailer' => 'Infrastructure/Adapters/Mail/SmtpMailer.php',
+        // Infrastructure - Password Reset Repository
+        'PasswordResetRepositoryMySQL' => 'Infrastructure/Adapters/Persistence/MySQL/Repository/PasswordResetRepositoryMySQL.php',
+
         // Application - Movie Ports In
         'CreateMovieUseCase'  => 'Application/Ports/In/CreateMovieUseCase.php',
         'UpdateMovieUseCase'  => 'Application/Ports/In/UpdateMovieUseCase.php',

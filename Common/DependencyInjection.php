@@ -72,6 +72,41 @@ final class DependencyInjection
         return new LoginService(self::getUserRepository());
     }
 
+    public static function getSmtpMailer(): SmtpMailer
+    {
+        return new SmtpMailer(
+            Env::get('MAIL_HOST', 'smtp.mailtrap.io'),
+            Env::getInt('MAIL_PORT', 587),
+            Env::get('MAIL_USERNAME', ''),
+            Env::get('MAIL_PASSWORD', ''),
+            Env::get('MAIL_FROM', 'no-reply@example.com'),
+            Env::get('MAIL_FROM_NAME', 'App'),
+            Env::get('MAIL_ENCRYPTION', 'tls')
+        );
+    }
+
+    public static function getPasswordResetRepository(): PasswordResetRepositoryMySQL
+    {
+        return new PasswordResetRepositoryMySQL(self::getPdo());
+    }
+
+    public static function getForgotPasswordUseCase(): ForgotPasswordService
+    {
+        $repo = self::getUserRepository();
+        return new ForgotPasswordService(
+            $repo,
+            self::getPasswordResetRepository(),
+            self::getSmtpMailer()
+        );
+    }
+
+    public static function getResetPasswordUseCase(): ResetPasswordService
+    {
+        $repo      = self::getUserRepository();
+        $resetRepo = self::getPasswordResetRepository();
+        return new ResetPasswordService($resetRepo, $resetRepo, $repo, $repo);
+    }
+
     public static function getUserWebMapper(): UserWebMapper
     {
         return new UserWebMapper();
