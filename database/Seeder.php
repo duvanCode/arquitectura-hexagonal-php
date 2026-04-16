@@ -17,8 +17,8 @@ $host     = getenv('DB_HOST')          ?: '127.0.0.1';
 $port     = (int) (getenv('DB_PORT')   ?: 3306);
 $dbName   = getenv('DB_NAME')          ?: 'crud_usuarios';
 // En Docker usamos la contraseña root; localmente puede ser vacía
-$username = getenv('DB_ROOT_USER')     ?: 'root';
-$password = getenv('DB_ROOT_PASSWORD') ?: '';
+$username = getenv('DB_USER')     ?: 'root';
+$password = getenv('DB_PASSWORD') ?: '';
 
 // ── Credenciales del usuario administrador inicial ─────────────────────────
 $adminName     = 'Administrador';
