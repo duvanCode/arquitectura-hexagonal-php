@@ -23,6 +23,7 @@ MAIL_FROM_NAME=${MAIL_FROM_NAME:-App}
 MAIL_ENCRYPTION=${MAIL_ENCRYPTION:-tls}
 EOF
 
+chown www-data:www-data /var/www/html/.env
 chmod 640 /var/www/html/.env
 
 # ─────────────────────────────────────────────────────────────────────────────
