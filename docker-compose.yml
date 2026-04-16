@@ -56,6 +56,7 @@ services:
     environment:
       MYSQL_DATABASE:      ${DB_NAME:-crud_usuarios}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootsecret}
+      MYSQL_ROOT_HOST:     '%'
       # MYSQL_USER no se define aquí: MySQL prohíbe usar "root" como MYSQL_USER.
       # La app se conecta directamente con root vía DB_ROOT_PASSWORD.
     volumes:
